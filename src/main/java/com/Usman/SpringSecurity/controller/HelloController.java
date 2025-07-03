@@ -1,8 +1,6 @@
-package com.Usman.SpringSecurity;
+package com.Usman.SpringSecurity.controller;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
