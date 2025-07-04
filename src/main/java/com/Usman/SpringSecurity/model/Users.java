@@ -1,16 +1,20 @@
 package com.Usman.SpringSecurity.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.Usman.SpringSecurity.repository.UserIdentity;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.context.support.BeanDefinitionDsl;
 
 @Data
 @Entity
-public class Users {
+public class Users implements UserIdentity {
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }

@@ -3,6 +3,8 @@ package com.Usman.SpringSecurity.service;
 
 import com.Usman.SpringSecurity.model.Users;
 import com.Usman.SpringSecurity.repository.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepo userRepo;
@@ -32,12 +36,14 @@ public class UserService {
        return userRepo.save(users);
     }
 
-    public String verify(Users user) {
-        Authentication authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
-        if(authentication.isAuthenticated()){
-            return jwtServices.generateToken(user.getUsername());
+    public String verify(String username, String password) {
+        logger.info("Login attempt for user: {}", username);
+        Authentication authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        if (authentication.isAuthenticated()) {
+            logger.info("Login successful for user: {}", username);
+            return jwtServices.generateToken(username);
         }
-            return "fail";
+        logger.warn("Login failed for user: {}", username);
+        return "fail";
     }
-
 }

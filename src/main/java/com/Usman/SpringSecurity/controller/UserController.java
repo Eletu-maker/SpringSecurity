@@ -1,5 +1,6 @@
 package com.Usman.SpringSecurity.controller;
 
+import com.Usman.SpringSecurity.DTO.request.LoginRequest;
 import com.Usman.SpringSecurity.model.Users;
 
 import com.Usman.SpringSecurity.service.UserService;
@@ -20,8 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody Users user){
-        System.out.println(user);
-        return userService.verify(user);
+    public String login(@RequestBody LoginRequest loginRequest) {
+        return userService.verify(loginRequest.getUsername(), loginRequest.getPassword());
     }
 }

@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,13 +22,27 @@ import java.util.Map;
 @Service
 public class JWTServices {
 
-    private String secretKey = "";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+/*
     public JWTServices() throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
         SecretKey sk = keyGenerator.generateKey();
         secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
     }
+
+ */
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
+
 
     public String generateToken(String Username) {
         Map<String,Object> claim =  new HashMap<>();
@@ -35,7 +51,7 @@ public class JWTServices {
                 .add(claim)
                 .subject(Username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 *20))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -54,12 +70,12 @@ public class JWTServices {
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver){
-        final Claims claims = extracrAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
 
 
-    private  Claims extracrAllClaims(String token){
+    private  Claims extractAllClaims(String token){
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
